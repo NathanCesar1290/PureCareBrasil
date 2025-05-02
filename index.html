@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Shop - E-commerce Minimalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="js/scripts.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .cart-notification {
+            animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+        }
+        @keyframes slideIn {
+            from { right: -100%; }
+            to { right: 20px; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+        .image-zoom {
+            transition: transform .2s;
+        }
+        .image-zoom:hover {
+            transform: scale(1.5);
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Header/Navigation -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="#" class="text-2xl font-bold text-gray-800">MINIMAL<span class="text-blue-500">SHOP</span></a>
+            </div>
+            
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-700 hover:text-blue-500">Home</a>
+                <a href="#categories" class="text-gray-700 hover:text-blue-500">Categorias</a>
+                <a href="#offers" class="text-gray-700 hover:text-blue-500">Ofertas</a>
+                <a href="#bestsellers" class="text-gray-700 hover:text-blue-500">Mais Vendidos</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden md:block">
+                    <input type="text" placeholder="Buscar produtos..." class="pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button class="absolute right-3 top-2 text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <button id="cart-btn" class="text-gray-700 hover:text-blue-500">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+                
+                <button class="md:hidden text-gray-700" id="mobile-menu-btn">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#" class="text-gray-700 hover:text-blue-500">Home</a>
+                <a href="#categories" class="text-gray-700 hover:text-blue-500">Categorias</a>
+                <a href="#offers" class="text-gray-700 hover:text-blue-500">Ofertas</a>
+                <a href="#bestsellers" class="text-gray-700 hover:text-blue-500">Mais Vendidos</a>
+                <div class="relative">
+                    <input type="text" placeholder="Buscar produtos..." class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button class="absolute right-3 top-2 text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="pt-2">
+                    <a href="#" class="block text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gray-100 py-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Bem-vindo ao MinimalShop</h1>
+                    <p class="text-xl text-gray-600 mb-6">Descubra produtos selecionados com design minimalista e qualidade excepcional.</p>
+                    <div class="flex space-x-4">
+                        <a href="#offers" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">Ver Ofertas</a>
+                        <a href="#categories" class="border border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-3 rounded-lg font-medium">Explorar</a>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Produtos minimalistas" class="w-full rounded-lg shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Nossas Categorias</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Category 1 -->
+                <div class="category-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Eletrônicos" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4">
+                            <h3 class="text-white text-xl font-semibold">Eletrônicos</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 font-medium">Ver produtos →</a>
+                    </div>
+                </div>
+                
+                <!-- Category 2 -->
+                <div class="category-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Moda" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4">
+                            <h3 class="text-white text-xl font-semibold">Moda</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 font-medium">Ver produtos →</a>
+                    </div>
+                </div>
+                
+                <!-- Category 3 -->
+                <div class="category-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1556909212-d5b604d0c90d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4">
+                            <h3 class="text-white text-xl font-semibold">Casa</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 font-medium">Ver produtos →</a>
+                    </div>
+                </div>
+                
+                <!-- Category 4 -->
+                <div class="category-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Beleza" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4">
+                            <h3 class="text-white text-xl font-semibold">Beleza</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 font-medium">Ver produtos →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Ofertas Especiais</h2>
+                <div class="flex items-center bg-red-500 text-white px-4 py-2 rounded-full">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span id="countdown">Termina em: 12:34:56</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Product 1 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Tênis Esportivo" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-30%</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Tênis Esportivo Premium</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(42)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-red-500 font-bold text-xl">R$ 199,90</span>
+                            <span class="text-gray-500 text-sm line-through ml-2">R$ 285,00</span>
+                        </div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="1" data-name="Tênis Esportivo Premium" data-price="199.90" data-image="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Relógio Inteligente" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-25%</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Relógio Inteligente</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(36)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-red-500 font-bold text-xl">R$ 349,90</span>
+                            <span class="text-gray-500 text-sm line-through ml-2">R$ 465,00</span>
+                        </div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="2" data-name="Relógio Inteligente" data-price="349.90" data-image="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e880c94d7c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Fones de Ouvido" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-40%</div>
+                        <div class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Só 3 restantes</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Fones de Ouvido Bluetooth</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(128)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-red-500 font-bold text-xl">R$ 179,90</span>
+                            <span class="text-gray-500 text-sm line-through ml-2">R$ 299,00</span>
+                        </div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="3" data-name="Fones de Ouvido Bluetooth" data-price="179.90" data-image="https://images.unsplash.com/photo-1505740420928-5e880c94d7c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Smartphone" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">-15%</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Smartphone Premium</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(89)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-red-500 font-bold text-xl">R$ 2.999,00</span>
+                            <span class="text-gray-500 text-sm line-through ml-2">R$ 3.529,00</span>
+                        </div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="4" data-name="Smartphone Premium" data-price="2999.00" data-image="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <a href="#" class="inline-block border border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-3 rounded-lg font-medium">Ver Todas as Ofertas</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bestsellers Section -->
+    <section id="bestsellers" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Mais Vendidos</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Product 5 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Câmera Vintage" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Mais Vendido</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Câmera Vintage</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(56)</span>
+                        </div>
+                        <div class="font-bold text-xl mb-2">R$ 459,90</div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="5" data-name="Câmera Vintage" data-price="459.90" data-image="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 6 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Perfume" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Mais Vendido</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Perfume Premium</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(112)</span>
+                        </div>
+                        <div class="font-bold text-xl mb-2">R$ 289,90</div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="6" data-name="Perfume Premium" data-price="289.90" data-image="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 7 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Óculos de Sol" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Mais Vendido</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Óculos de Sol Premium</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(78)</span>
+                        </div>
+                        <div class="font-bold text-xl mb-2">R$ 179,90</div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="7" data-name="Óculos de Sol Premium" data-price="179.90" data-image="https://images.unsplash.com/photo-1594035910387-fea47794261f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Product 8 -->
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Mochila" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">Mais Vendido</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Mochila Resistente</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="text-gray-600 text-sm ml-2">(64)</span>
+                        </div>
+                        <div class="font-bold text-xl mb-2">R$ 149,90</div>
+                        <button class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded add-to-cart" data-id="8" data-name="Mochila Resistente" data-price="149.90" data-image="https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-4">Receba Nossas Ofertas</h2>
+            <p class="text-gray-600 mb-8 max-w-2xl mx-auto">Inscreva-se em nossa newsletter e receba descontos exclusivos e novidades diretamente no seu e-mail.</p>
+            
+            <div class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Seu melhor e-mail" class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-r-lg font-medium">Inscrever</button>
+            </div>
+            
+            <p class="text-sm text-gray-500 mt-4">Não compartilharemos seu e-mail com terceiros.</p>
+        </div>
+    </section>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/2 mb-6 md:mb-0">
+                                    <div class="mb-4">
+                                        <img id="modal-image" src="" alt="Product" class="w-full rounded-lg">
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        <div class="cursor-pointer border rounded">
+                                            <img id="modal-thumb-1" src="" alt="Thumbnail" class="w-full h-16 object-cover">
+                                        </div>
+                                        <div class="cursor-pointer border rounded">
+                                            <img id="modal-thumb-2" src="" alt="Thumbnail" class="w-full h-16 object-cover">
+                                        </div>
+                                        <div class="cursor-pointer border rounded">
+                                            <img id="modal-thumb-3" src="" alt="Thumbnail" class="w-full h-16 object-cover">
+                                        </div>
+                                        <div class="cursor-pointer border rounded">
+                                            <img id="modal-thumb-4" src="" alt="Thumbnail" class="w-full h-16 object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="md:w-1/2 md:pl-6">
+                                    <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-2"></h3>
+                                    <div class="flex items-center mb-3">
+                                        <div class="flex text-yellow-400" id="modal-rating"></div>
+                                        <span id="modal-review-count" class="text-gray-600 text-sm ml-2"></span>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <span id="modal-price" class="text-2xl font-bold text-gray-900"></span>
+                                        <span id="modal-old-price" class="text-gray-500 text-sm line-through ml-2"></span>
+                                    </div>
+                                    
+                                    <p id="modal-description" class="text-gray-600 mb-4"></p>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Cor:</label>
+                                        <div class="flex space-x-2">
+                                            <button class="w-8 h-8 rounded-full bg-black border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></button>
+                                            <button class="w-8 h-8 rounded-full bg-gray-500 border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></button>
+                                            <button class="w-8 h-8 rounded-full bg-blue-500 border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Tamanho:</label>
+                                        <div class="flex space-x-2">
+                                            <button class="px-3 py-1 border rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">P</button>
+                                            <button class="px-3 py-1 border rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">M</button>
+                                            <button class="px-3 py-1 border rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">G</button>
+                                            <button class="px-3 py-1 border rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">GG</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2">Quantidade:</label>
+                                        <div class="flex items-center">
+                                            <button id="decrease-qty" class="px-3 py-1 bg-gray-200 rounded-l hover:bg-gray-300">-</button>
+                                            <input id="product-qty" type="number" value="1" min="1" max="10" class="w-16 text-center border-t border-b border-gray-300 py-1">
+                                            <button id="increase-qty" class="px-3 py-1 bg-gray-200 rounded-r hover:bg-gray-300">+</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex space-x-3">
+                                        <button id="modal-add-to-cart" class="flex-grow bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium">
+                                            Adicionar ao Carrinho
+                                        </button>
+                                        <button id="modal-buy-now" class="flex-grow border border-blue-500 text-blue-500 hover:bg-blue-50 py-3 px-6 rounded-lg font-medium">
+                                            Comprar Agora
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 z-50 h-full w-full sm:w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex flex-col h-full">
+            <div class="flex justify-between items-center border-b p-4">
+                <h3 class="text-xl font-bold">Seu Carrinho</h3>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="cart-items" class="flex-grow overflow-y-auto p-4">
+                <!-- Cart items will be added here dynamically -->
+                <div id="empty-cart-message" class="text-center py-8">
+                    <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Seu carrinho está vazio</p>
+                    <a href="#" class="inline-block mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded">Continuar Comprando</a>
+                </div>
+            </div>
+            
+            <div class="border-t p-4">
+                <div class="flex justify-between mb-2">
+                    <span class="text-gray-600">Subtotal</span>
+                    <span id="cart-subtotal" class="font-bold">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between mb-4">
+                    <span class="text-gray-600">Frete</span>
+                    <span id="cart-shipping" class="font-bold">-</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold mb-4">
+                    <span>Total</span>
+                    <span id="cart-total">R$ 0,00</span>
+                </div>
+                <button id="checkout-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium">
+                    Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div id="cart-notification" class="cart-notification fixed top-20 right-5 z-50 hidden bg-white shadow-lg rounded-lg p-4 w-64">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <img id="notification-image" src="" alt="Product" class="h-12 w-12 rounded object-cover">
+            </div>
+            <div class="ml-3">
+                <p id="notification-text" class="text-sm font-medium text-gray-900"></p>
+                <div class="mt-1">
+                    <a href="#" class="text-sm text-blue-500 hover:text-blue-600">Ver Carrinho</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">MINIMAL<span class="text-blue-400">SHOP</span></h3>
+                    <p class="text-gray-400">Sua loja online de produtos selecionados com design minimalista e qualidade excepcional.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Links Úteis</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Sobre Nós</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Termos de Uso</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Atendimento</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">contato@minimalshop.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">(11) 1234-5678</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fab fa-whatsapp mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">(11) 98765-4321</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Redes Sociais</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest-p text-xl"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h5 class="font-bold mb-2">Formas de Pagamento</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <i class="fab fa-cc-visa text-2xl text-gray-400"></i>
+                            <i class="fab fa-cc-mastercard text-2xl text-gray-400"></i>
+                            <i class="fab fa-cc-amex text-2xl text-gray-400"></i>
+                            <i class="fab fa-cc-paypal text-2xl text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 MinimalShop. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Countdown Timer
+        function updateCountdown() {
+            const now = new Date();
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 0);
+            
+            const diff = endOfDay - now;
+            
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdown').textContent = `Termina em: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        // Cart Functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+        }
+        
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const cartSubtotal = document.getElementById('cart-subtotal');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                cartItemsContainer.innerHTML = '';
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                
+                let itemsHTML = '';
+                let subtotal = 0;
+                
+                cart.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    itemsHTML += `
+                        <div class="flex items-start mb-4 pb-4 border-b">
+                            <div class="flex-shrink-0">
+                                <img src="${item.image}" alt="${item.name}" class="h-16 w-16 rounded object-cover">
+                            </div>
+                            <div class="ml-3 flex-grow">
+                                <h4 class="text-sm font-medium">${item.name}</h4>
+                                <div class="flex justify-between items-center mt-1">
+                                    <div class="flex items-center">
+                                        <button class="decrease-quantity px-2 py-1 bg-gray-200 rounded-l" data-index="${index}">-</button>
+                                        <span class="quantity px-2 py-1 border-t border-b border-gray-300">${item.quantity}</span>
+                                        <button class="increase-quantity px-2 py-1 bg-gray-200 rounded-r" data-index="${index}">+</button>
+                                    </div>
+                                    <span class="text-sm font-bold">R$ ${itemTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <button class="remove-item ml-2 text-gray-500 hover:text-red-500" data-index="${index}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                cartItemsContainer.innerHTML = itemsHTML;
+                
+                // Add event listeners to the new buttons
+                document.querySelectorAll('.decrease-quantity').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        if (cart[index].quantity > 1) {
+                            cart[index].quantity--;
+                        } else {
+                            cart.splice(index, 1);
+                        }
+                        saveCart();
+                        updateCartUI();
+                        updateCartCount();
+                    });
+                });
+                
+                document.querySelectorAll('.increase-quantity').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        cart[index].quantity++;
+                        saveCart();
+                        updateCartUI();
+                        updateCartCount();
+                    });
+                });
+                
+                document.querySelectorAll('.remove-item').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.closest('button').getAttribute('data-index');
+                        cart.splice(index, 1);
+                        saveCart();
+                        updateCartUI();
+                        updateCartCount();
+                        
+                        // Show notification
+                        showNotification('Item removido do carrinho', '');
+                    });
+                });
+            }
+            
+            cartSubtotal.textContent = `R$ ${subtotal.toFixed(2)}`;
+            cartTotal.textContent = `R$ ${subtotal.toFixed(2)}`;
+        }
+        
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        
+        function showNotification(text, image) {
+            const notification = document.getElementById('cart-notification');
+            const notificationText = document.getElementById('notification-text');
+            const notificationImage = document.getElementById('notification-image');
+            
+            notificationText.textContent = text;
+            notificationImage.src = image;
+            
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // Initialize cart UI
+        updateCartCount();
+        updateCartUI();
+        
+        // Cart Sidebar Toggle
+        const cartBtn = document.getElementById('cart-btn');
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const closeCart = document.getElementById('close-cart');
+        
+        cartBtn.addEventListener('click', () => {
+            cartSidebar.style.transform = 'translateX(0)';
+        });
+        
+        closeCart.addEventListener('click', () => {
+            cartSidebar.style.transform = 'translateX(100%)';
+        });
+        
+        // Add to Cart Buttons
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const name = e.target.getAttribute('data-name');
+                const price = parseFloat(e.target.getAttribute('data-price'));
+                const image = e.target.getAttribute('data-image');
+                
+                // Check if item already exists in cart
+                const existingItem = cart.find(item => item.id === id);
+                
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({
+                        id,
+                        name,
+                        price,
+                        image,
+                        quantity: 1
+                    });
+                }
+                
+                saveCart();
+                updateCartCount();
+                updateCartUI();
+                
+                // Show notification
+                showNotification(`${name} adicionado ao carrinho`, image);
+                
+                // Open cart sidebar
+                cartSidebar.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Checkout Button
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            alert('Redirecionando para o checkout...');
+            // In a real implementation, this would redirect to a checkout page
+        });
+        
+        // Product Modal
+        const productModal = document.getElementById('product-modal');
+        const closeModal = document.getElementById('close-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalPrice = document.getElementById('modal-price');
+        const modalOldPrice = document.getElementById('modal-old-price');
+        const modalDescription = document.getElementById('modal-description');
+        const modalRating = document.getElementById('modal-rating');
+        const modalReviewCount = document.getElementById('modal-review-count');
+        const modalAddToCart = document.getElementById('modal-add-to-cart');
+        const modalBuyNow = document.getElementById('modal-buy-now');
+        const decreaseQty = document.getElementById('decrease-qty');
+        const increaseQty = document.getElementById('increase-qty');
+        const productQty = document.getElementById('product-qty');
+        
+        // Mock product data for the modal
+        const products = [
+            {
+                id: 1,
+                name: "Tênis Esportivo Premium",
+                price: "199,90",
+                oldPrice: "285,00",
+                description: "Tênis esportivo com tecnologia de amortecimento avançada para maior conforto durante suas atividades físicas. Design moderno e materiais de alta qualidade.",
+                rating: 4.5,
+                reviewCount: 42,
+                images: [
+                    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae28?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                ]
+            },
+            {
+                id: 2,
+                name: "Relógio Inteligente",
+                price: "349,90",
+                oldPrice: "465,00",
+                description: "Relógio inteligente com monitoramento de atividades físicas, notificações de smartphone, resistente à água e com bateria de longa duração.",
+                rating: 4,
+                reviewCount: 36,
+                images: [
+                    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1558126317-1f1546e46dbb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                ]
+            }
+        ];
+        
+        // Open modal when product is clicked
+        document.querySelectorAll('.product-card img').forEach((img, index) => {
+            img.addEventListener('click', () => {
+                const product = products[index % 2]; // Just for demo, alternates between 2 products
+                
+                modalTitle.textContent = product.name;
+                modalPrice.textContent = `R$ ${product.price}`;
+                modalOldPrice.textContent = `R$ ${product.oldPrice}`;
+                modalDescription.textContent = product.description;
+                
+                // Set rating stars
+                modalRating.innerHTML = '';
+                const fullStars = Math.floor(product.rating);
+                const hasHalfStar = product.rating % 1 >= 0.5;
+                
+                for (let i = 0; i < fullStars; i++) {
+                    modalRating.innerHTML += '<i class="fas fa-star"></i>';
+                }
+                
+                if (hasHalfStar) {
+                    modalRating.innerHTML += '<i class="fas fa-star-half-alt"></i>';
+                }
+                
+                const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                for (let i = 0; i < emptyStars; i++) {
+                    modalRating.innerHTML += '<i class="far fa-star"></i>';
+                }
+                
+                modalReviewCount.textContent = `(${product.reviewCount})`;
+                
+                // Set images
+                modalImage.src = product.images[0];
+                document.getElementById('modal-thumb-1').src = product.images[0];
+                document.getElementById('modal-thumb-2').src = product.images[1];
+                document.getElementById('modal-thumb-3').src = product.images[2];
+                document.getElementById('modal-thumb-4').src = product.images[3];
+                
+                // Add click handlers for thumbnails
+                document.querySelectorAll('#product-modal [id^="modal-thumb-"]').forEach((thumb, thumbIndex) => {
+                    thumb.addEventListener('click', () => {
+                        modalImage.src = product.images[thumbIndex];
+                    });
+                });
+                
+                // Set quantity to 1
+                productQty.value = 1;
+                
+                // Add to cart handler
+                modalAddToCart.onclick = () => {
+                    const quantity = parseInt(productQty.value);
+                    
+                    // Check if item already exists in cart
+                    const existingItem = cart.find(item => item.id === product.id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                    } else {
+                        cart.push({
+                            id: product.id,
+                            name: product.name,
+                            price: parseFloat(product.price.replace(',', '.')),
+                            image: product.images[0],
+                            quantity: quantity
+                        });
+                    }
+                    
+                    saveCart();
+                    updateCartCount();
+                    updateCartUI();
+                    
+                    // Show notification
+                    showNotification(`${quantity} ${product.name} adicionado(s) ao carrinho`, product.images[0]);
+                    
+                    // Close modal
+                    productModal.classList.add('hidden');
+                };
+                
+                // Buy now handler
+                modalBuyNow.onclick = () => {
+                    // In a real implementation, this would redirect to checkout with this product
+                    alert(`Redirecionando para checkout com ${product.name}`);
+                };
+                
+                // Show modal
+                productModal.classList.remove('hidden');
+            });
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            productModal.classList.add('hidden');
+        });
+        
+        // Quantity controls in modal
+        decreaseQty.addEventListener('click', () => {
+            if (productQty.value > 1) {
+                productQty.value--;
+            }
+        });
+        
+        increaseQty.addEventListener('click', () => {
+            if (productQty.value < 10) {
+                productQty.value++;
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === productModal) {
+                productModal.classList.add('hidden');
+            }
+        });
+        <!-- Outras seções do site (Hero, Categories, Offers, etc.) estão acima -->
+
+    <script>
+        // Função para carregar dados JSON
+        async function loadData(file) {
+            const response = await fetch(`data/${file}`);
+            return await response.json();
+        }
+
+        // Carregar produtos, categorias, etc.
+        window.onload = async () => {
+            const products = await loadData('products.json');
+            const categories = await loadData('categories.json');
+            // Função para renderizar os dados no HTML (será detalhada no JS)
+            renderProducts(products);
+            renderCategories(categories);
+        };
+    </script>
+</body>
+</html>

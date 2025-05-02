@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "Tênis Esportivo Premium",
+        "price": 199.90,
+        "oldPrice": 285.00,
+        "discount": 30,
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        "rating": 4.5,
+        "reviews": 42,
+        "category": "Moda",
+        "status": "active"
+    },
+    {
+        "id": 2,
+        "name": "Relógio Inteligente",
+        "price": 349.90,
+        "oldPrice": 465.00,
+        "discount": 25,
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+        "rating": 4.0,
+        "reviews": 36,
+        "category": "Eletrônicos",
+        "status": "active"
+    }
+    // Adicione os outros produtos aqui
+]
