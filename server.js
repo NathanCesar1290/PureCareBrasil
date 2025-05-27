@@ -105,7 +105,7 @@ app.use('/api', apiRoutes);
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
-    message: 'Minimal Shop API is running',
+    message: 'PureCareBrasil API is running',
     timestamp: new Date().toISOString()
   });
 });

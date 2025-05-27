@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: minimal-shop-app
+    container_name: purecarebrasil-app
     restart: always
     env_file: .env.production
     environment:
@@ -14,7 +14,7 @@ services:
       - RATE_LIMIT_WINDOW_MS=900000
       - RATE_LIMIT_MAX=100
       - LOG_LEVEL=info
-      - MONGODB_URI=mongodb://mongo:27017/minimal-shop
+      - MONGODB_URI=mongodb://mongo:27017/purecarebrasil
     ports:
       - "3000:3000"
     depends_on:
@@ -52,12 +52,12 @@ services:
 
   mongo:
     image: mongo:5.0
-    container_name: minimal-shop-mongo
+    container_name: purecarebrasil-mongo
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=minimal-shop
+      - MONGO_INITDB_DATABASE=purecarebrasil
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
@@ -192,6 +192,6 @@ networks:
 
 volumes:
   mongodb_data:
-    name: minimal-shop-mongodb-data
+    name: purecarebrasil-mongodb-data
   app_node_modules:
-    name: minimal-shop-node-modules
+    name: purecarebrasil-node-modules
