@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Instalar dependências
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --legacy-peer-deps --production
 
 # Copiar fontes
 COPY . .
