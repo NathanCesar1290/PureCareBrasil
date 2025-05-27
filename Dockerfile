@@ -10,9 +10,6 @@ RUN npm install --legacy-peer-deps --production && \
 # Copiar fontes
 COPY . .
 
-# Construir a aplicação
-RUN npm run build
-
 FROM node:18-alpine AS production
 
 WORKDIR /app
