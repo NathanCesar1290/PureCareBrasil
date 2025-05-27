@@ -17,11 +17,6 @@ WORKDIR /app
 # Copiar arquivos do builder
 COPY --from=builder /app .
 
-# Configurar firewall para permitir apenas IPs específicos
-RUN apk add --no-cache iptables && \
-    echo "*filter\n:INPUT DROP [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT ACCEPT [0:0]\n-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT\n-A INPUT -p tcp -m tcp --dport 10000 -s 52.41.36.82 -j ACCEPT\n-A INPUT -p tcp -m tcp --dport 10000 -s 54.191.253.12 -j ACCEPT\n-A INPUT -p tcp -m tcp --dport 10000 -s 44.226.122.3 -j ACCEPT\n-A INPUT -i lo -j ACCEPT\nCOMMIT" > /etc/iptables/rules.v4 && \
-    iptables-restore < /etc/iptables/rules.v4
-
 # Expor porta
 EXPOSE 10000
 
