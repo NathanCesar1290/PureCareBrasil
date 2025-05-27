@@ -37,7 +37,16 @@ winston.addColors(colors);
 // Formato personalizado para os logs
 const logFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
   const metaStr = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
-  return `${timestamp} [${level}] ${stack || message}${metaStr ? `\n${metaStr}` : ''}`;
+  const syslogLevel = {
+    error: 3, // Error
+    warn: 4, // Warning
+    info: 6, // Information
+    debug: 7, // Debug
+    verbose: 7, // Debug
+    silly: 7 // Debug
+  }[level];
+  
+  return `<${syslogLevel}>1 ${timestamp} ${process.env.RENDER_SERVICE_NAME || 'purecarebrasil'} ${process.env.NODE_ENV} ${process.pid} - ${stack || message}${metaStr ? `\n${metaStr}` : ''}`;
 });
 
 // Configuração dos logs em desenvolvimento
@@ -60,6 +69,12 @@ const developmentLogger = winston.createLogger({
         align(),
         logFormat
       )
+    }),
+    new winston.transports.Syslog({
+      host: 'localhost',
+      port: 514,
+      facility: 'user',
+      label: 'purecarebrasil-dev'
     })
   ],
   exceptionHandlers: [
@@ -78,7 +93,7 @@ const developmentLogger = winston.createLogger({
 
 // Configuração dos logs em produção
 const productionLogger = winston.createLogger({
-  level: 'info',
+  level: process.env.RENDER_LOG_LEVEL || 'info',
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
     json(),
@@ -86,6 +101,12 @@ const productionLogger = winston.createLogger({
     logFormat
   ),
   transports: [
+    new winston.transports.Syslog({
+      host: 'localhost',
+      port: 514,
+      facility: 'user',
+      label: process.env.RENDER_SERVICE_NAME || 'purecarebrasil'
+    }),
     new winston.transports.File({ 
       filename: path.join(logDir, 'error.log'),
       level: 'error',
@@ -97,12 +118,24 @@ const productionLogger = winston.createLogger({
     })
   ],
   exceptionHandlers: [
+    new winston.transports.Syslog({
+      host: 'localhost',
+      port: 514,
+      facility: 'user',
+      label: `${process.env.RENDER_SERVICE_NAME || 'purecarebrasil'}-exceptions`
+    }),
     new winston.transports.File({ 
       filename: path.join(logDir, 'exceptions.log'),
       ...logRotation
     })
   ],
   rejectionHandlers: [
+    new winston.transports.Syslog({
+      host: 'localhost',
+      port: 514,
+      facility: 'user',
+      label: `${process.env.RENDER_SERVICE_NAME || 'purecarebrasil'}-rejections`
+    }),
     new winston.transports.File({ 
       filename: path.join(logDir, 'rejections.log'),
       ...logRotation
