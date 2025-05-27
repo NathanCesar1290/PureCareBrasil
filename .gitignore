@@ -1,0 +1,48 @@
+# Dependências
+/node_modules
+/.pnp
+.pnp.js
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diretórios
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Arquivos de build
+/build
+dist
+
+# Arquivos de cache
+.cache
+.vercel
+.next
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de upload
+/public/uploads/*
+!public/uploads/.gitkeep

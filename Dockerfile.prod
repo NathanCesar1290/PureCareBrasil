@@ -1,0 +1,55 @@
+# Estágio de construção
+FROM node:16-alpine AS builder
+
+WORKDIR /app
+
+# Instala as dependências de build
+RUN apk add --no-cache python3 make g++
+
+# Copia os arquivos de definição de dependências
+COPY package*.json ./
+
+# Instala as dependências de produção
+RUN npm ci --only=production
+
+# Copia o código-fonte
+COPY . .
+
+# Remove arquivos desnecessários
+RUN rm -rf tests/ .github/ docs/
+
+# Cria usuário não-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+# Estágio de produção final
+FROM node:16-alpine
+
+WORKDIR /app
+
+# Instala apenas o necessário para o tempo de execução
+RUN apk add --no-cache tini
+
+# Copia as dependências instaladas do estágio de construção
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+COPY --from=builder /app/ ./
+
+
+# Configura o usuário não-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+# Expõe a porta da aplicação
+EXPOSE 3000
+
+# Define o comando de inicialização
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "server.js"]
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD node healthcheck.js || exit 1
