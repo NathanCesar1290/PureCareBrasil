@@ -1,0 +1,65 @@
+name: purecarebrasil
+buildCommand: npm run build
+startCommand: npm run prod
+env:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: 10000
+  - key: HOST
+    value: 0.0.0.0
+  - key: RENDER
+    value: true
+  - key: FRONTEND_URL
+    value: https://purecarebrasil.com
+  - key: MONGODB_URI
+    value: ${MONGODB_URI}
+  - key: JWT_SECRET
+    value: ${JWT_SECRET}
+  - key: JWT_EXPIRES_IN
+    value: 90d
+  - key: JWT_COOKIE_EXPIRES_IN
+    value: 90
+  - key: JWT_COOKIE_SECURE
+    value: true
+  - key: JWT_COOKIE_HTTPONLY
+    value: true
+  - key: RATE_LIMIT_WINDOW_MS
+    value: 900000
+  - key: RATE_LIMIT_MAX
+    value: 100
+  - key: CORS_ENABLED
+    value: true
+  - key: CORS_ORIGINS
+    value: https://purecarebrasil.com,https://www.purecarebrasil.com
+  - key: CORS_METHODS
+    value: GET,HEAD,PUT,PATCH,POST,DELETE
+  - key: CORS_HEADERS
+    value: Content-Type,Authorization
+  - key: XSS_PROTECTION
+    value: true
+  - key: SQL_INJECTION_PROTECTION
+    value: true
+  - key: CSP_ENABLED
+    value: true
+healthCheckPath: /health
+minReplicas: 1
+maxReplicas: 3
+autoStart: true
+scale:
+  minReplicas: 1
+  maxReplicas: 3
+  cpu:
+    targetUtilization: 70
+  memory:
+    targetUtilization: 70
+  rules:
+    - metric: http_requests
+      threshold: 100
+      period: 1m
+    - metric: response_time
+      threshold: 500
+      period: 1m
+resources:
+  cpu: 2
+  memoryGb: 4
