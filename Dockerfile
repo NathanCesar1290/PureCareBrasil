@@ -1,3 +1,4 @@
+# Build stage
 FROM node:18-alpine AS builder
 
 WORKDIR /app
@@ -10,28 +11,35 @@ RUN npm install --legacy-peer-deps --production && \
 # Copiar fontes
 COPY . .
 
-FROM node:18-alpine AS production
+# Production stage
+FROM node:18-alpine
 
 WORKDIR /app
 
 # Copiar arquivos do builder
 COPY --from=builder /app .
 
-# Expor porta
-EXPOSE 10000
+# Garantir que o diretório de uploads existe
+RUN mkdir -p uploads
 
 # Configurar variáveis de ambiente
 ENV NODE_ENV=production
 ENV PORT=10000
-ENV RENDER_SERVICE_NAME=purecarebrasil
-ENV RENDER_LOG_LEVEL=info
+ENV HOST=0.0.0.0
+ENV RENDER=true
 
-# Configurar logs para RFC5424
-RUN apk add --no-cache syslog-ng
-RUN syslog-ng --version
+# Expor a porta que o app vai rodar
+EXPOSE ${PORT}
+
+# Configuração de saúde
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 # Iniciar aplicação
-CMD ["sh", "-c", "syslog-ng -F && node server.js"]
+CMD ["node", "server.js"]
+
+# Instruções para o Render
+# A aplicação deve escutar em 0.0.0.0 e na porta especificada na variável de ambiente PORT
 
 # Labels para identificação
 LABEL org.opencontainers.image.title="PureCareBrasil"
@@ -41,3 +49,6 @@ LABEL org.opencontainers.image.authors="NathanCesar1290"
 LABEL org.opencontainers.image.url="https://github.com/NathanCesar1290/PureCareBrasil"
 LABEL org.opencontainers.image.source="https://github.com/NathanCesar1290/PureCareBrasil"
 LABEL org.opencontainers.image.documentation="https://github.com/NathanCesar1290/PureCareBrasil/README.md"
+
+# Adicionar instruções para o Render
+# Render precisa que a aplicação escute em 0.0.0.0 e na porta especificada na variável de ambiente PORT

@@ -5,10 +5,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "NODE_ENV=development HOST=0.0.0.0 PORT=3000 nodemon server.js",
+    "prod": "NODE_ENV=production HOST=0.0.0.0 PORT=10000 node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "format": "prettier --write \"**/*.{js,jsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
+    "docker:build": "docker build -t purecarebrasil .",
+    "docker:run": "docker run -p 10000:10000 -e NODE_ENV=production -e PORT=10000 -e HOST=0.0.0.0 --name purecarebrasil purecarebrasil"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

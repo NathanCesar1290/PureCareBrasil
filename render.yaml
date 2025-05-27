@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: purecarebrasil
+    env: docker
+    plan: free
+    region: sao
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+    healthCheckPath: /health
+    dockerContext: .
+    dockerfile: ./Dockerfile
+    autoDeploy: true

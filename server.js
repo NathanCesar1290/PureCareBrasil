@@ -25,10 +25,13 @@ requiredEnvVars.forEach(varName => {
   }
 });
 
-// Validar portas
-const port = parseInt(process.env.PORT);
+// Configuração do host e porta
+const host = process.env.HOST || '0.0.0.0';
+const port = parseInt(process.env.PORT || '3000');
+
+// Validar porta
 if (isNaN(port) || port <= 0 || port > 65535) {
-  throw new Error('PORT inválida');
+  throw new Error(`PORT inválida: ${process.env.PORT}`);
 }
 
 // Conectar ao banco de dados
@@ -36,8 +39,19 @@ connectDB();
 
 // Importar rotas
 const apiRoutes = require('./routes/api');
+const healthRoutes = require('./health');
 
 const app = express();
+
+// Health check route (before other middlewares to avoid unnecessary processing)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    nodeVersion: process.version
+  });
+});
 
 // Configuração de CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
@@ -115,6 +129,17 @@ app.use(cookieParser());
 // Rotas
 app.use('/api', apiRoutes);
 
+// Rota para verificar status da API
+app.get('/api/v1/status', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'API is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    nodeVersion: process.version
+  });
+});
+
 // Rota raiz
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -146,12 +171,14 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = process.env.PORT || 10000;
-
-const server = app.listen(PORT, '0.0.0.0', () => {
-  logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+// Iniciar o servidor
+const server = app.listen(port, host, () => {
+  logger.info(`Server running in ${process.env.NODE_ENV} mode on ${host}:${port}`.cyan.bold);
   logger.info(`Environment: ${process.env.NODE_ENV}`);
-  logger.info(`Database: ${process.env.MONGODB_URI}`);
+  logger.info(`Database: ${process.env.MONGODB_URI ? 'Connected' : 'Not connected'}`);
+}).on('error', (err) => {
+  logger.error('Erro ao iniciar o servidor:'.red, err.message);
+  process.exit(1);
 });
 
 // Configuração de encerramento limpo
@@ -173,91 +200,6 @@ process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
-
-// Logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined', {
-    stream: logger.stream
-  }));
-}
-
-// Configuração do body-parser
-app.use(express.json({ 
-  limit: '20mb',
-  extended: true
-}));
-app.use(express.urlencoded({ 
-  extended: true,
-  limit: '20mb'
-}));
-
-// Configuração de upload de arquivos
-app.use(fileupload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
-  limits: {
-    fileSize: 20 * 1024 * 1024,
-    files: 10
-  },
-  abortOnLimit: true,
-  safeFileNames: true,
-  preserveExtension: true
-}));
-
-// Configuração de cookies
-app.use(cookieParser());
-
-// Rotas
-app.use('/api', apiRoutes);
-
-// Rota raiz
-app.get('/', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'PureCareBrasil API is running',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Tratamento de erros
-app.use(errorHandler);
-
-// Tratamento de rotas não encontradas
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Route not found'
-  });
-});
-
-// Configuração de produção
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  
-  // Handle SPA routing
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-  });
-}
-
-// Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Mount routers
-app.use('/api', apiRoutes);
-
-// Rota para verificar status da API
-app.get('/api/v1/status', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'API está funcionando',
-    version: '1.0.0'
-  });
-});
-
 // Error handling middleware
 app.use(errorHandler);
 
