@@ -150,22 +150,6 @@ process.on('SIGTERM', () => {
 });
 
 // Configuração de erro
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || origin === 'http://localhost:3000') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-// Configuração de CORS
-app.use(cors(corsOptions));
-
-// Configuração de erro
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception:', error);
   process.exit(1);
@@ -176,43 +160,73 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000,
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false
-});
-app.use('/api', limiter);
-
-// Middleware de segurança
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https:"]
-    }
-  }
-}));
-
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
-// File uploading
-app.use(fileupload({
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  useTempFiles: true,
-  tempFileDir: '/tmp/'
-}));
-
 // Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined', {
+    stream: logger.stream
+  }));
+}
+
+// Configuração do body-parser
+app.use(express.json({ 
+  limit: '20mb',
+  extended: true
+}));
+app.use(express.urlencoded({ 
+  extended: true,
+  limit: '20mb'
+}));
+
+// Configuração de upload de arquivos
+app.use(fileupload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+  limits: {
+    fileSize: 20 * 1024 * 1024,
+    files: 10
+  },
+  abortOnLimit: true,
+  safeFileNames: true,
+  preserveExtension: true
+}));
+
+// Configuração de cookies
+app.use(cookieParser());
+
+// Rotas
+app.use('/api', apiRoutes);
+
+// Rota raiz
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'PureCareBrasil API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Tratamento de erros
+app.use(errorHandler);
+
+// Tratamento de rotas não encontradas
+app.use((req, res) => {
+  res.status(404).json({
+    status: 'error',
+    message: 'Route not found'
+  });
+});
+
+// Configuração de produção
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../client/build')));
+  
+  // Handle SPA routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+  });
 }
 
 // Set static folder
