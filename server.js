@@ -17,6 +17,20 @@ const logger = require('./utils/logger');
 // Carregar variáveis de ambiente
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
+// Verificar variáveis de ambiente obrigatórias
+const requiredEnvVars = ['MONGODB_URI', 'NODE_ENV', 'PORT', 'RATE_LIMIT_WINDOW_MS', 'RATE_LIMIT_MAX', 'ALLOWED_ORIGINS'];
+requiredEnvVars.forEach(varName => {
+  if (!process.env[varName]) {
+    throw new Error(`Variável de ambiente obrigatória não encontrada: ${varName}`);
+  }
+});
+
+// Validar portas
+const port = parseInt(process.env.PORT);
+if (isNaN(port) || port <= 0 || port > 65535) {
+  throw new Error('PORT inválida');
+}
+
 // Conectar ao banco de dados
 connectDB();
 
