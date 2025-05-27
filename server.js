@@ -150,6 +150,22 @@ process.on('SIGTERM', () => {
 });
 
 // Configuração de erro
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || origin === 'http://localhost:3000') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+// Configuração de CORS
+app.use(cors(corsOptions));
+
+// Configuração de erro
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception:', error);
   process.exit(1);
@@ -159,14 +175,6 @@ process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
