@@ -60,11 +60,14 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 };
 app.use(cors(corsOptions));
 
@@ -85,15 +88,33 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https:"]
+      imgSrc: ["'self'", "data:", "https:", "*.cloudinary.com"],
+      connectSrc: ["'self'", "https:", "*.stripe.com", "*.sendgrid.net"],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'", "https:", "data:"],
+      frameSrc: ["'self'", "https:", "*.stripe.com"],
+      frameAncestors: ["'self'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      upgradeInsecureRequests: [],
+      blockAllMixedContent: []
     }
-  }
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: false
 }));
 
-app.use(mongoSanitize());
+app.use(mongoSanitize({
+  replaceWith: '_'
+}));
+
 app.use(xss());
-app.use(hpp());
+
+app.use(hpp({
+  whitelist: ['quantity', 'price', 'rating']
+}));
 
 // Logging
 app.use(morgan('combined', {

@@ -2,7 +2,7 @@ services:
   - type: web
     name: purecarebrasil
     env: docker
-    plan: free
+    plan: pro
     region: sao
     envVars:
       - key: NODE_ENV
@@ -11,7 +11,206 @@ services:
         value: 10000
       - key: HOST
         value: 0.0.0.0
+      - key: FRONTEND_URL
+        value: https://purecarebrasil.com
+      - key: MONGODB_URI
+        value: mongodb+srv://seu-usuario:senha@seu-cluster.mongodb.net/purecarebrasil?retryWrites=true&w=majority
+      - key: REDIS_URL
+        value: redis://:senha@seu-redis-host:6379
+      - key: JWT_SECRET
+        value: seu_segredo_jwt_32_caracteres
+      - key: JWT_EXPIRES_IN
+        value: 90d
+      - key: JWT_COOKIE_EXPIRES_IN
+        value: 90
+      - key: JWT_COOKIE_SECURE
+        value: true
+      - key: JWT_COOKIE_HTTPONLY
+        value: true
+      - key: ADMIN_EMAIL
+        value: admin@purecarebrasil.com
+      - key: ADMIN_PASSWORD
+        value: senha_forte_admin
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX
+        value: "100"
+      - key: RATE_LIMIT_ENABLED
+        value: true
+      - key: RATE_LIMIT_MESSAGE
+        value: Too many requests from this IP, please try again later.
+      - key: RATE_LIMIT_HEADERS
+        value: true
+      - key: CORS_ENABLED
+        value: true
+      - key: CORS_ORIGINS
+        value: https://purecarebrasil.com,https://www.purecarebrasil.com
+      - key: CORS_METHODS
+        value: GET,HEAD,PUT,PATCH,POST,DELETE
+      - key: CORS_HEADERS
+        value: Content-Type,Authorization
+      - key: XSS_PROTECTION
+        value: true
+      - key: SQL_INJECTION_PROTECTION
+        value: true
+      - key: CSP_ENABLED
+        value: true
+      - key: SECURE_HEADERS
+        value: true
+      - key: SECURE_REFERRER_POLICY
+        value: no-referrer-when-downgrade
+      - key: SECURE_CONTENT_SECURITY_POLICY
+        value: true
+      - key: SECURE_XSS_PROTECTION
+        value: true
+      - key: SECURE_FRAME_GUARD
+        value: true
+      - key: SECURE_PERMIT_CROSS_DOMAIN_POLICIES
+        value: false
+      - key: SECURE_PERMIT_CROSS_ORIGIN
+        value: true
+      - key: COMPRESSION_ENABLED
+        value: true
+      - key: COMPRESSION_THRESHOLD
+        value: "1024"
+      - key: COMPRESSION_LEVEL
+        value: "6"
+      - key: METRICS_ENABLED
+        value: true
+      - key: METRICS_PORT
+        value: "9090"
+      - key: METRICS_PATH
+        value: /metrics
+      - key: HEALTH_CHECK_PATH
+        value: /health
+      - key: HEALTH_CHECK_INTERVAL
+        value: "30"
+      - key: HEALTH_CHECK_TIMEOUT
+        value: "5"
+      - key: CACHE_ENABLED
+        value: true
+      - key: CACHE_PROVIDER
+        value: redis
+      - key: CACHE_TTL
+        value: "3600"
+      - key: CACHE_MAX_ITEMS
+        value: "10000"
+      - key: SESSION_SECRET
+        value: seu_segredo_sessao
+      - key: SESSION_TTL
+        value: 24h
+      - key: SESSION_SECURE
+        value: true
+      - key: SESSION_HTTP_ONLY
+        value: true
+      - key: SESSION_MAX_AGE
+        value: "86400000"
+      - key: STORAGE_PROVIDER
+        value: aws
+      - key: STORAGE_BUCKET
+        value: purecarebrasil
+      - key: STORAGE_REGION
+        value: sa-east-1
+      - key: STORAGE_ACCESS_KEY
+        value: seu_access_key
+      - key: STORAGE_SECRET_KEY
+        value: seu_secret_key
     healthCheckPath: /health
-    dockerContext: .
-    dockerfile: ./Dockerfile
+    healthCheckInterval: 30
+    healthCheckTimeout: 5
     autoDeploy: true
+    buildCommand: npm run build
+    startCommand: npm start
+    minMemory: 1024
+    maxMemory: 2048
+    minCpu: 1
+    maxCpu: 2
+    minInstances: 2
+    maxInstances: 4
+    instanceType: auto
+    zeroDowntimeDeploy: true
+    backupSchedule: "0 2 * * *"
+    backupRetention: 7
+    backupEnabled: true
+    backupPath: /backup
+    backupCompression: true
+    backupEncryption: true
+    backupProvider: aws
+    backupBucket: purecarebrasil-backups
+    backupRegion: sa-east-1
+    backupAccessKey: seu_access_key
+    backupSecretKey: seu_secret_key
+    backupPrefix: backup_
+    backupResetAfter: 7d
+    backupMaxDelay: 1000
+    backupMaxRetries: 3
+    backupRetryDelay: 5
+    backupMaxAge: 30d
+    backupCompressLevel: 6
+    env:
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+      - key: ALLOWED_ORIGINS
+        value: ${ALLOWED_ORIGINS}
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+    healthCheck:
+      path: /health
+      interval: 30
+      timeout: 10
+      retries: 3
+      startPeriod: 5
+    environment:
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+      - key: ALLOWED_ORIGINS
+        value: ${ALLOWED_ORIGINS}
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+    build:
+      command: "npm install --legacy-peer-deps && npm run build"
+      environment:
+        - key: NODE_ENV
+          value: production
+    start:
+      command: "npm start"
+      environment:
+        - key: NODE_ENV
+          value: production
+    restartPolicy:
+      maxRetries: 3
+      retryDelay: 5
+    resources:
+      cpu: 1
+      memory: 2048
+    secrets:
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+    environmentVariables:
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+      - key: ALLOWED_ORIGINS
+        value: ${ALLOWED_ORIGINS}
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+    deploy:
+      autoDeploy: true
+      branch: main
+    webhooks:
+      - url: ${GITHUB_WEBHOOK_URL}
+        type: github
+        events:
+          - push
+          - pull_request
+    notifications:
+      - type: slack
+        webhookUrl: ${SLACK_WEBHOOK_URL}
+      - type: email
+        recipients:
+          - ${ADMIN_EMAIL}

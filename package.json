@@ -7,6 +7,7 @@
     "start": "node server.js",
     "dev": "NODE_ENV=development HOST=0.0.0.0 PORT=3000 nodemon server.js",
     "prod": "NODE_ENV=production HOST=0.0.0.0 PORT=10000 node server.js",
+    "build": "npm install && npm run lint && npm run format",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",

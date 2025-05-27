@@ -1,0 +1,58 @@
+{
+  "name": "purecarebrasil",
+  "type": "web",
+  "buildCommand": "npm run build",
+  "startCommand": "npm run prod",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "10000",
+    "HOST": "0.0.0.0",
+    "RENDER": "true",
+    "FRONTEND_URL": "https://purecarebrasil.com",
+    "MONGODB_URI": "${MONGODB_URI}",
+    "JWT_SECRET": "${JWT_SECRET}",
+    "JWT_EXPIRES_IN": "90d",
+    "JWT_COOKIE_EXPIRES_IN": "90",
+    "JWT_COOKIE_SECURE": "true",
+    "JWT_COOKIE_HTTPONLY": "true",
+    "RATE_LIMIT_WINDOW_MS": "900000",
+    "RATE_LIMIT_MAX": "100",
+    "CORS_ENABLED": "true",
+    "CORS_ORIGINS": "https://purecarebrasil.com,https://www.purecarebrasil.com",
+    "CORS_METHODS": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "CORS_HEADERS": "Content-Type,Authorization",
+    "XSS_PROTECTION": "true",
+    "SQL_INJECTION_PROTECTION": "true",
+    "CSP_ENABLED": "true"
+  },
+  "healthCheckPath": "/health",
+  "minReplicas": 1,
+  "maxReplicas": 3,
+  "autoStart": true,
+  "scale": {
+    "minReplicas": 1,
+    "maxReplicas": 3,
+    "cpu": {
+      "targetUtilization": 70
+    },
+    "memory": {
+      "targetUtilization": 70
+    },
+    "rules": [
+      {
+        "metric": "http_requests",
+        "threshold": 100,
+        "period": "1m"
+      },
+      {
+        "metric": "response_time",
+        "threshold": 500,
+        "period": "1m"
+      }
+    ]
+  },
+  "resources": {
+    "cpu": 2,
+    "memoryGb": 4
+  }
+}
