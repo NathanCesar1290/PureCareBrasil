@@ -175,20 +175,54 @@ if (process.env.NODE_ENV === 'production') {
 const server = app.listen(port, host, () => {
   logger.info(`Server running in ${process.env.NODE_ENV} mode on ${host}:${port}`.cyan.bold);
   logger.info(`Environment: ${process.env.NODE_ENV}`);
+  logger.info(`Node.js version: ${process.version}`);
   logger.info(`Database: ${process.env.MONGODB_URI ? 'Connected' : 'Not connected'}`);
+  
+  // Log de informações adicionais em desenvolvimento
+  if (process.env.NODE_ENV === 'development') {
+    logger.debug('Debug mode is enabled');
+  }
 }).on('error', (err) => {
-  logger.error('Erro ao iniciar o servidor:'.red, err.message);
+  logger.error('Erro ao iniciar o servidor:', err);
   process.exit(1);
 });
 
-// Configuração de encerramento limpo
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received. Closing server...');
+// Tratamento de erros não capturados
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception:', err);
+  // Encerra o processo apenas se não estiver em produção
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Encerra o processo apenas se não estiver em produção
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
+
+// Encerramento gracioso do servidor
+const gracefulShutdown = () => {
+  logger.info('Recebido sinal de desligamento. Encerrando o servidor...');
+  
   server.close(() => {
-    logger.info('Server closed');
+    logger.info('Servidor encerrado.');
     process.exit(0);
   });
-});
+
+  // Força o encerramento após 10 segundos
+  setTimeout(() => {
+    logger.error('Forçando o encerramento do servidor...');
+    process.exit(1);
+  }, 10000);
+};
+
+// Captura os sinais de encerramento
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 // Configuração de erro
 process.on('uncaughtException', (error) => {
@@ -196,10 +230,6 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
 // Error handling middleware
 app.use(errorHandler);
 
