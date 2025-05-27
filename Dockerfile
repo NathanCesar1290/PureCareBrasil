@@ -1,30 +1,13 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
 # Instalar dependências
 COPY package*.json ./
-RUN npm install
+RUN npm install --production
 
 # Copiar fontes
 COPY . .
-
-# Construir o frontend
-RUN npm run build
-
-# Criar imagem de produção
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Instalar dependências de produção
-COPY package*.json ./
-RUN npm install --production
-
-# Copiar arquivos do builder
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.js ./
-COPY --from=builder /app/.env.production ./
 
 # Expor porta
 EXPOSE 3000
